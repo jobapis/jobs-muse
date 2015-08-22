@@ -5,6 +5,34 @@ use JobBrander\Jobs\Client\Job;
 class Muse extends AbstractProvider
 {
     /**
+     * Category
+     *
+     * @var string
+     */
+    public $category;
+
+    /**
+     * Company
+     *
+     * @var string
+     */
+    public $company;
+
+    /**
+     * Level
+     *
+     * @var string
+     */
+    public $level;
+
+    /**
+     * Location
+     *
+     * @var string
+     */
+    public $location;
+
+    /**
      * Returns the standardized job object
      *
      * @param array $payload
@@ -14,35 +42,51 @@ class Muse extends AbstractProvider
     public function createJobObject($payload)
     {
         $defaults = [
-            'jobTitle',
-            'company',
-            'location',
-            'date',
-            'detailUrl'
+            "description",
+            "creation_date",
+            "company_mini_f1_image",
+            "locations", // array
+            "id",
+            "state",
+            "update_date",
+            "level_displays", // array
+            "company_name",
+            "company_small_logo_image",
+            "company_small_f1_image",
+            "apply_link",
+            "external_apply_link",
+            "title",
+            "company_f1_post_tile_image",
+            "company_f1_image",
+            "full_description",
+            "model_type",
+            "categories", // array
+            "search_image",
+            "type",
         ];
 
         $payload = static::parseAttributeDefaults($payload, $defaults);
 
         $job = new Job([
-            'title' => $payload['jobTitle'],
-            'name' => $payload['jobTitle'],
-            'url' => $payload['detailUrl'],
-            'location' => $payload['location'],
+            'title' => $payload['title'],
+            'name' => $payload['title'],
+            'url' => 'https://www.themuse.com'.$payload['apply_link'],
         ]);
 
-        $location = static::parseLocation($payload['location']);
-
-        $job->setCompany($payload['company'])
-            ->setDatePostedAsString($payload['date']);
-
-        if (isset($location[0])) {
-            $job->setCity($location[0]);
-        }
-        if (isset($location[1])) {
-            $job->setState($location[1]);
-        }
-
         return $job;
+    }
+
+    /**
+     * Get descending results
+     *
+     * @return string
+     */
+    public function getDescending()
+    {
+        if (isset($this->descending)) {
+            return $this->descending;
+        }
+        return 'true';
     }
 
     /**
@@ -62,7 +106,7 @@ class Muse extends AbstractProvider
      */
     public function getListingsPath()
     {
-        return 'resultItemList';
+        return 'results';
     }
 
     /**
@@ -73,11 +117,12 @@ class Muse extends AbstractProvider
     public function getQueryString()
     {
         $query_params = [
-            'text' => 'getKeyword',
-            'state' => 'getState',
-            'city' => 'getCity',
+            'descending' => 'getDescending',
             'page' => 'getPage',
-            'pgcnt' => 'getCount',
+            'job_category[]' => 'getCategory',
+            'job_level[]' => 'getLevel',
+            'job_location[]' => 'getLocation',
+            'company[]' => 'getCompany',
         ];
 
         $query_string = [];
@@ -101,7 +146,7 @@ class Muse extends AbstractProvider
     {
         $query_string = $this->getQueryString();
 
-        return 'http://service.dice.com/api/rest/jobsearch/v1/simple.json?'.$query_string;
+        return 'https://api-v1.themuse.com/jobs?'.$query_string;
     }
 
     /**

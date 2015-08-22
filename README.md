@@ -32,6 +32,15 @@ $jobs = $client->setLocation('Chicago, IL')
 
 The `getJobs` method will return a [Collection](https://github.com/JobBrander/jobs-common/blob/master/src/Collection.php) of [Job](https://github.com/JobBrander/jobs-common/blob/master/src/Job.php) objects.
 
+## Setter methods supported
+
+- getDescending($true)
+- getPage(1)
+- getCategory('foo')
+- getLevel('bar')
+- getLocation('hop, lo')
+- getCompany('mip')
+
 ## Testing
 
 ``` bash

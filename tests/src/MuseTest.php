@@ -11,7 +11,7 @@ class MuseTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->client = new Dice();
+        $this->client = new Muse();
     }
 
     public function testItWillUseJsonFormat()
@@ -21,6 +21,14 @@ class MuseTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('json', $format);
     }
 
+    public function testTheWholeThing()
+    {
+        // $results = $this->client->getJobs();
+
+        // print_r($results);
+    }
+
+    /*
     public function testItWillUseGetHttpVerb()
     {
         $verb = $this->client->getVerb();
@@ -205,4 +213,5 @@ class MuseTest extends \PHPUnit_Framework_TestCase
         ];
         return array_replace($defaults, $attributes);
     }
+    */
 }
