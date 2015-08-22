@@ -5,7 +5,7 @@ use JobBrander\Jobs\Client\Job;
 class Muse extends AbstractProvider
 {
     /**
-     * Category
+     * Job Category
      *
      * @var string
      */
@@ -19,14 +19,21 @@ class Muse extends AbstractProvider
     public $company;
 
     /**
-     * Level
+     * Descending string ('true' or 'false')
+     *
+     * @var string
+     */
+    public $descending;
+
+    /**
+     * Job Level
      *
      * @var string
      */
     public $level;
 
     /**
-     * Location
+     * Job Location
      *
      * @var string
      */
@@ -70,8 +77,17 @@ class Muse extends AbstractProvider
         $job = new Job([
             'title' => $payload['title'],
             'name' => $payload['title'],
+            'description' => $payload['full_description'],
             'url' => 'https://www.themuse.com'.$payload['apply_link'],
+            'sourceId' => $payload['id'],
         ]);
+
+        $job->setCompany($payload['company_name'])
+            ->setCompanyLogo($payload['company_f1_image'])
+            ->setDatePostedAsString($payload['creation_date']);
+
+        // Set categories, locations, level_displays (experience level)
+        //  Look at govt jobs for multiple location example
 
         return $job;
     }

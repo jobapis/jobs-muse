@@ -23,9 +23,9 @@ class MuseTest extends \PHPUnit_Framework_TestCase
 
     public function testTheWholeThing()
     {
-        // $results = $this->client->getJobs();
+        $results = $this->client->getJobs();
 
-        // print_r($results);
+        print_r($results);
     }
 
     /*
