@@ -54,9 +54,9 @@ Please see [CONTRIBUTING](https://github.com/jobbrander/jobs-muse/blob/master/CO
 ## Credits
 
 - [Karl Hughes](https://github.com/karllhughes)
-- [Steven Maguire](https://github.com/stevenmaguire)
 - [All Contributors](https://github.com/jobbrander/jobs-muse/contributors)
 
 ## License
 
 The Apache 2.0. Please see [License File](https://github.com/jobbrander/jobs-muse/blob/master/LICENSE) for more information.
+
