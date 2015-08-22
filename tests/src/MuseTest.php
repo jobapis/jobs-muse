@@ -21,14 +21,6 @@ class MuseTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('json', $format);
     }
 
-    public function testTheWholeThing()
-    {
-        $results = $this->client->getJobs();
-
-        print_r($results);
-    }
-
-    /*
     public function testItWillUseGetHttpVerb()
     {
         $verb = $this->client->getVerb();
@@ -40,72 +32,7 @@ class MuseTest extends \PHPUnit_Framework_TestCase
     {
         $path = $this->client->getListingsPath();
 
-        $this->assertEquals('resultItemList', $path);
-    }
-
-    public function testItWillProvideEmptyParameters()
-    {
-        $parameters = $this->client->getParameters();
-
-        $this->assertEmpty($parameters);
-        $this->assertTrue(is_array($parameters));
-    }
-
-    public function testUrlIncludesKeywordWhenProvided()
-    {
-        $keyword = uniqid().' '.uniqid();
-        $param = 'text='.urlencode($keyword);
-
-        $url = $this->client->setKeyword($keyword)->getUrl();
-
-        $this->assertContains($param, $url);
-    }
-
-    public function testUrlNotIncludesKeywordWhenNotProvided()
-    {
-        $param = 'text=';
-
-        $url = $this->client->getUrl();
-
-        $this->assertNotContains($param, $url);
-    }
-
-    public function testUrlIncludesCityWhenCityProvided()
-    {
-        $city = uniqid();
-        $param = 'city='.urlencode($city);
-
-        $url = $this->client->setCity($city)->getUrl();
-
-        $this->assertContains($param, $url);
-    }
-
-    public function testUrlIncludesStateWhenStateProvided()
-    {
-        $state = uniqid();
-        $param = 'state='.urlencode($state);
-
-        $url = $this->client->setState($state)->getUrl();
-
-        $this->assertContains($param, $url);
-    }
-
-    public function testUrlNotIncludesCityWhenNotProvided()
-    {
-        $param = 'city=';
-
-        $url = $this->client->getUrl();
-
-        $this->assertNotContains($param, $url);
-    }
-
-    public function testUrlNotIncludesStateWhenNotProvided()
-    {
-        $param = 'state=';
-
-        $url = $this->client->getUrl();
-
-        $this->assertNotContains($param, $url);
+        $this->assertEquals('results', $path);
     }
 
     public function testUrlIncludesPageWhenProvided()
@@ -127,21 +54,97 @@ class MuseTest extends \PHPUnit_Framework_TestCase
         $this->assertNotContains($param, $url);
     }
 
-    public function testUrlIncludesCountWhenProvided()
+    public function testUrlIncludesDescendingWhenProvided()
     {
-        $count = uniqid();
-        $param = 'pgcnt='.$count;
+        $descending = uniqid();
+        $param = 'descending='.$descending;
 
-        $url = $this->client->setCount($count)->getUrl();
+        $url = $this->client->setDescending($descending)->getUrl();
 
         $this->assertContains($param, $url);
     }
 
-    public function testUrlNotIncludesStartWhenNotProvided()
+    public function testUrlIncludesDescendingWhenNotProvided()
     {
-        $param = 'pgcnt=';
+        $param = 'descending=';
 
-        $url = $this->client->setCount(null)->getUrl();
+        $url = $this->client->setDescending(null)->getUrl();
+
+        $this->assertContains($param, $url);
+    }
+
+    public function testUrlIncludesCategoryWhenProvided()
+    {
+        $string = uniqid().' '.uniqid();
+        $param = urlencode('job_category[]').'='.urlencode($string);
+
+        $url = $this->client->setCategory($string)->getUrl();
+
+        $this->assertContains($param, $url);
+    }
+
+    public function testUrlNotIncludesCategoryWhenNotProvided()
+    {
+        $param = urlencode('job_category[]').'=';
+
+        $url = $this->client->getUrl();
+
+        $this->assertNotContains($param, $url);
+    }
+
+    public function testUrlIncludesCompanyWhenProvided()
+    {
+        $string = uniqid().' '.uniqid();
+        $param = urlencode('company[]').'='.urlencode($string);
+
+        $url = $this->client->setCompany($string)->getUrl();
+
+        $this->assertContains($param, $url);
+    }
+
+    public function testUrlNotIncludesCompanyWhenNotProvided()
+    {
+        $param = urlencode('company[]').'=';
+
+        $url = $this->client->getUrl();
+
+        $this->assertNotContains($param, $url);
+    }
+
+    public function testUrlIncludesLevelWhenProvided()
+    {
+        $string = uniqid().' '.uniqid();
+        $param = urlencode('job_level[]').'='.urlencode($string);
+
+        $url = $this->client->setLevel($string)->getUrl();
+
+        $this->assertContains($param, $url);
+    }
+
+    public function testUrlNotIncludesLevelWhenNotProvided()
+    {
+        $param = urlencode('job_level[]').'=';
+
+        $url = $this->client->getUrl();
+
+        $this->assertNotContains($param, $url);
+    }
+
+    public function testUrlIncludesLocationWhenProvided()
+    {
+        $location = uniqid().' '.uniqid();
+        $param = urlencode('job_location[]').'='.urlencode($location);
+
+        $url = $this->client->setLocation($location)->getUrl();
+
+        $this->assertContains($param, $url);
+    }
+
+    public function testUrlNotIncludesLocationWhenNotProvided()
+    {
+        $param = urlencode('job_location[]').'=';
+
+        $url = $this->client->getUrl();
 
         $this->assertNotContains($param, $url);
     }
@@ -152,10 +155,20 @@ class MuseTest extends \PHPUnit_Framework_TestCase
 
         $results = $this->client->createJobObject($payload);
 
-        $this->assertEquals($payload['jobTitle'], $results->title);
-        $this->assertEquals($payload['company'], $results->company);
-        $this->assertEquals($payload['location'], $results->location);
-        $this->assertEquals($payload['detailUrl'], $results->url);
+        $this->assertEquals($payload['title'], $results->title);
+        $this->assertEquals($payload['company_name'], $results->company);
+        $this->assertEquals('https://www.themuse.com'.$payload['apply_link'], $results->url);
+        $this->assertEquals($payload['id'], $results->sourceId);
+    }
+
+    public function testItCanCreateJobArrayFromPayloadWithMultipleLocations()
+    {
+        $locations_count = rand(2,20);
+        $payload = $this->createJobArrayWithMultipleLocations($locations_count);
+
+        $results = $this->client->createJobArray($payload);
+
+        $this->assertCount($locations_count, $results);
     }
 
     public function testItCanConnect()
@@ -163,14 +176,12 @@ class MuseTest extends \PHPUnit_Framework_TestCase
         $provider = $this->getProviderAttributes();
 
         for ($i = 0; $i < $provider['jobs_count']; $i++) {
-            $payload['resultItemList'][] = $this->createJobArray();
+            $payload['results'][] = $this->createJobArray();
         }
 
         $responseBody = json_encode($payload);
 
         $job = m::mock($this->jobClass);
-        $job->shouldReceive('setQuery')->with($provider['keyword'])
-            ->times($provider['jobs_count'])->andReturnSelf();
         $job->shouldReceive('setSource')->with($provider['source'])
             ->times($provider['jobs_count'])->andReturnSelf();
 
@@ -190,13 +201,32 @@ class MuseTest extends \PHPUnit_Framework_TestCase
         $this->assertCount($provider['jobs_count'], $results);
     }
 
-    private function createJobArray($num = 10) {
+    private function createJobArray() {
         return [
-            'jobTitle' => uniqid(),
-            'company' => uniqid(),
-            'location' => uniqid().', '.uniqid(),
-            'date' => '2015-07-'.rand(1,31),
-            'detailUrl' => uniqid(),
+            'id' => uniqid(),
+            'title' => uniqid(),
+            'company_name' => uniqid(),
+            'apply_link' => uniqid(),
+            'locations' => [uniqid()],
+            'creation_date' => '2015-08-'.rand(1,30),
+        ];
+    }
+
+    private function createJobArrayWithMultipleLocations($count) {
+        $cc = 0;
+
+        while ($cc < $count) {
+            $locations[] = uniqid();
+            $cc++;
+        }
+
+        return [
+            'id' => uniqid(),
+            'title' => uniqid(),
+            'company_name' => uniqid(),
+            'apply_link' => uniqid(),
+            'locations' => $locations,
+            'creation_date' => '2015-08-'.rand(1,30),
         ];
     }
 
@@ -205,13 +235,10 @@ class MuseTest extends \PHPUnit_Framework_TestCase
         $defaults = [
             'path' => uniqid(),
             'format' => 'json',
-            'keyword' => uniqid(),
             'source' => uniqid(),
             'params' => [uniqid()],
             'jobs_count' => rand(2,10),
-
         ];
         return array_replace($defaults, $attributes);
     }
-    */
 }

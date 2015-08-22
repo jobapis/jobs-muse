@@ -1,6 +1,7 @@
 <?php namespace JobBrander\Jobs\Client\Providers;
 
 use JobBrander\Jobs\Client\Job;
+use JobBrander\Jobs\Client\Collection;
 
 class Muse extends AbstractProvider
 {
@@ -49,24 +50,18 @@ class Muse extends AbstractProvider
     public function createJobObject($payload)
     {
         $defaults = [
-            "description",
             "creation_date",
-            "company_mini_f1_image",
             "locations", // array
             "id",
             "state",
             "update_date",
             "level_displays", // array
             "company_name",
-            "company_small_logo_image",
-            "company_small_f1_image",
             "apply_link",
             "external_apply_link",
             "title",
-            "company_f1_post_tile_image",
             "company_f1_image",
             "full_description",
-            "model_type",
             "categories", // array
             "search_image",
             "type",
@@ -80,14 +75,14 @@ class Muse extends AbstractProvider
             'description' => $payload['full_description'],
             'url' => 'https://www.themuse.com'.$payload['apply_link'],
             'sourceId' => $payload['id'],
+            'location' => $payload['locations'],
         ]);
 
         $job->setCompany($payload['company_name'])
             ->setCompanyLogo($payload['company_f1_image'])
-            ->setDatePostedAsString($payload['creation_date']);
-
-        // Set categories, locations, level_displays (experience level)
-        //  Look at govt jobs for multiple location example
+            ->setDatePostedAsString($payload['creation_date'])
+            ->setOccupationalCategory($payload['categories'])
+            ->setExperienceRequirements($payload['level_displays']);
 
         return $job;
     }
@@ -113,6 +108,42 @@ class Muse extends AbstractProvider
     public function getFormat()
     {
         return 'json';
+    }
+
+    /**
+     * Create and get collection of jobs from given listings
+     *
+     * @param  array $listings
+     *
+     * @return Collection
+     */
+    protected function getJobsCollectionFromListings(array $listings = array())
+    {
+        $collection = new Collection;
+        array_map(function ($item) use ($collection) {
+            $jobs = $this->createJobArray($item);
+            foreach ($jobs as $item) {
+                $job = $this->createJobObject($item);
+                $job->setSource($this->getSource());
+                $collection->add($job);
+            }
+        }, $listings);
+        return $collection;
+    }
+
+    public function createJobArray($item)
+    {
+        $jobs = [];
+        if (isset($item['locations']) && count($item['locations']) > 1) {
+            foreach ($item['locations'] as $location) {
+                $item['location'] = $location;
+                $jobs[] = $item;
+            }
+        } else {
+            $item['location'] = $item['locations'][0];
+            $jobs[] = $item;
+        }
+        return $jobs;
     }
 
     /**
