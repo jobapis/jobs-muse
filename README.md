@@ -7,7 +7,8 @@
 [![Quality Score](https://img.shields.io/scrutinizer/g/JobBrander/jobs-muse.svg?style=flat-square)](https://scrutinizer-ci.com/g/JobBrander/jobs-muse)
 [![Total Downloads](https://img.shields.io/packagist/dt/jobbrander/jobs-muse.svg?style=flat-square)](https://packagist.org/packages/jobbrander/jobs-muse)
 
-This package provides Muse Jobs API support for the JobBrander's [Jobs Client](https://github.com/JobBrander/jobs-common).
+This package provides [Muse Jobs API](https://www.themuse.com/developers#job-listing)
+support for the JobBrander's [Jobs Client](https://github.com/JobBrander/jobs-common).
 
 ## Installation
 
@@ -25,21 +26,17 @@ Usage is the same as Job Branders's Jobs Client, using `\JobBrander\Jobs\Client\
 $client = new JobBrander\Jobs\Client\Provider\Muse();
 
 // Search for job listings in Chicago, IL
-$jobs = $client->setLocation('Chicago, IL')
-    ->setPage(1)
+$jobs = $client
+    ->setLocation('Chicago, IL')   // A location from the Muse's list of location strings: https://www.themuse.com/developers#job-listing
+    ->setCategory('Education')     // A string that restricts search results to jobs in the specified category. A list of valid categories is in the Muse's documentation
+    ->setLevel('Internship')       // A string that restricts search results to jobs in the specified experience level. A list of valid levels is in the Muse's documentation
+    ->setCompany('Facebook')       // A string that restricts search results to jobs at the specified company.
+    ->setDescending(true)          // The sort order of the results (ascending or descending). Valid values are: true, false; The default is true.
+    ->setPage(2)                   // The requested page of result sets, numbered beginning from 1. Default is 1. If this number exceeds the value of the response property totalPages, the response will contain zero results.
     ->getJobs();
 ```
 
 The `getJobs` method will return a [Collection](https://github.com/JobBrander/jobs-common/blob/master/src/Collection.php) of [Job](https://github.com/JobBrander/jobs-common/blob/master/src/Job.php) objects.
-
-## Setter methods supported
-
-- getDescending($true)
-- getPage(1)
-- getCategory('foo')
-- getLevel('bar')
-- getLocation('hop, lo')
-- getCompany('mip')
 
 ## Testing
 
