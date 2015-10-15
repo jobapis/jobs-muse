@@ -83,6 +83,25 @@ class MuseTest extends \PHPUnit_Framework_TestCase
         $this->assertContains($param, $url);
     }
 
+    public function testUrlIncludesMultipleCategoriesWhenProvided()
+    {
+        $params = [];
+        $array = [
+            0 => uniqid().' '.uniqid(),
+            1 => uniqid().' '.uniqid(),
+            2 => uniqid().' '.uniqid(),
+        ];
+        foreach ($array as $key => $category) {
+            $params[] = urlencode('job_category[]').'='.urlencode($array[$key]);
+        }
+
+        $url = $this->client->setCategory($array)->getUrl();
+
+        foreach ($params as $param) {
+            $this->assertContains($param, $url);
+        }
+    }
+
     public function testUrlNotIncludesCategoryWhenNotProvided()
     {
         $param = urlencode('job_category[]').'=';

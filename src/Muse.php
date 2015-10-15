@@ -147,6 +147,19 @@ class Muse extends AbstractProvider
     }
 
     /**
+     * Get category or categories
+     *
+     * @return string
+     */
+    public function getCategory()
+    {
+        if (is_array($this->category)) {
+            // print_r($this->category); exit;
+        }
+        return $this->category;
+    }
+
+    /**
      * Get listings path
      *
      * @return  string
@@ -181,7 +194,8 @@ class Muse extends AbstractProvider
             }
         });
 
-        return http_build_query($query_string);
+        $query = http_build_query($query_string, null, '&');
+        return preg_replace('/%5B(?:[0-9]|[1-9][0-9]+)%5D=/', '=', $query);
     }
 
     /**
