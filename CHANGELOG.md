@@ -1,6 +1,23 @@
 # Changelog
 All Notable changes to `jobs-muse` will be documented in this file
 
+## 0.2.0 - 2015-10-15
+
+### Added
+- Support for multiple parameters in setCategory() and other setters
+
+### Deprecated
+- Nothing
+
+### Fixed
+- Nothing
+
+### Removed
+- Nothing
+
+### Security
+- Nothing
+
 ## 0.1.1 - 2015-08-30
 
 ### Added
