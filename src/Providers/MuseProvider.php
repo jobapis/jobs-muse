@@ -3,43 +3,8 @@
 use JobBrander\Jobs\Client\Job;
 use JobBrander\Jobs\Client\Collection;
 
-class Muse extends AbstractProvider
+class MuseProvider extends AbstractProvider
 {
-    /**
-     * Job Category
-     *
-     * @var string
-     */
-    public $category;
-
-    /**
-     * Company
-     *
-     * @var string
-     */
-    public $company;
-
-    /**
-     * Descending string ('true' or 'false')
-     *
-     * @var string
-     */
-    public $descending;
-
-    /**
-     * Job Level
-     *
-     * @var string
-     */
-    public $level;
-
-    /**
-     * Job Location
-     *
-     * @var string
-     */
-    public $location;
-
     /**
      * Returns the standardized job object
      *
@@ -154,7 +119,6 @@ class Muse extends AbstractProvider
     public function getCategory()
     {
         if (is_array($this->category)) {
-            // print_r($this->category); exit;
         }
         return $this->category;
     }

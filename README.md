@@ -7,7 +7,7 @@
 [![Quality Score](https://img.shields.io/scrutinizer/g/jobapis/jobs-muse.svg?style=flat-square)](https://scrutinizer-ci.com/g/jobapis/jobs-muse)
 [![Total Downloads](https://img.shields.io/packagist/dt/jobapis/jobs-muse.svg?style=flat-square)](https://packagist.org/packages/jobapis/jobs-muse)
 
-This package provides [Muse Jobs API](https://www.themuse.com/developers#job-listing)
+This package provides [Muse Jobs API](https://www.themuse.com/developers)
 support for the JobApis's [Jobs Client](https://github.com/jobapis/jobs-common).
 
 ## Installation

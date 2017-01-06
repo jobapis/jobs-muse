@@ -1,9 +1,9 @@
 <?php namespace JobBrander\Jobs\Client\Providers\Test;
 
-use JobBrander\Jobs\Client\Providers\Muse;
+use JobBrander\Jobs\Client\Providers\MuseProvider;
 use Mockery as m;
 
-class MuseTest extends \PHPUnit_Framework_TestCase
+class MuseProviderTest extends \PHPUnit_Framework_TestCase
 {
     private $clientClass = 'JobBrander\Jobs\Client\Providers\AbstractProvider';
     private $collectionClass = 'JobBrander\Jobs\Client\Collection';
@@ -11,7 +11,7 @@ class MuseTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->client = new Muse();
+        $this->client = new MuseProvider();
     }
 
     public function testItWillUseJsonFormat()
