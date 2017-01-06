@@ -1,263 +1,173 @@
-<?php namespace JobBrander\Jobs\Client\Providers\Test;
+<?php namespace JobApis\Jobs\Client\Test;
 
-use JobBrander\Jobs\Client\Providers\MuseProvider;
+use JobApis\Jobs\Client\Collection;
+use JobApis\Jobs\Client\Job;
+use JobApis\Jobs\Client\Providers\MuseProvider;
+use JobApis\Jobs\Client\Queries\MuseQuery;
 use Mockery as m;
 
 class MuseProviderTest extends \PHPUnit_Framework_TestCase
 {
-    private $clientClass = 'JobBrander\Jobs\Client\Providers\AbstractProvider';
-    private $collectionClass = 'JobBrander\Jobs\Client\Collection';
-    private $jobClass = 'JobBrander\Jobs\Client\Job';
+    /**
+     * @var MuseProvider
+     */
+    public $client;
 
     public function setUp()
     {
-        $this->client = new MuseProvider();
+        $this->query = m::mock('JobApis\Jobs\Client\Queries\MuseQuery');
+
+        $this->client = new MuseProvider($this->query);
     }
 
-    public function testItWillUseJsonFormat()
+    public function testItCanGetDefaultResponseFields()
     {
-        $format = $this->client->getFormat();
-
-        $this->assertEquals('json', $format);
-    }
-
-    public function testItWillUseGetHttpVerb()
-    {
-        $verb = $this->client->getVerb();
-
-        $this->assertEquals('GET', $verb);
-    }
-
-    public function testListingPath()
-    {
-        $path = $this->client->getListingsPath();
-
-        $this->assertEquals('results', $path);
-    }
-
-    public function testUrlIncludesPageWhenProvided()
-    {
-        $page = uniqid();
-        $param = 'page='.$page;
-
-        $url = $this->client->setPage($page)->getUrl();
-
-        $this->assertContains($param, $url);
-    }
-
-    public function testUrlNotIncludesPageWhenNotProvided()
-    {
-        $param = 'page=';
-
-        $url = $this->client->setPage(null)->getUrl();
-
-        $this->assertNotContains($param, $url);
-    }
-
-    public function testUrlIncludesDescendingWhenProvided()
-    {
-        $descending = uniqid();
-        $param = 'descending='.$descending;
-
-        $url = $this->client->setDescending($descending)->getUrl();
-
-        $this->assertContains($param, $url);
-    }
-
-    public function testUrlIncludesDescendingWhenNotProvided()
-    {
-        $param = 'descending=';
-
-        $url = $this->client->setDescending(null)->getUrl();
-
-        $this->assertContains($param, $url);
-    }
-
-    public function testUrlIncludesCategoryWhenProvided()
-    {
-        $string = uniqid().' '.uniqid();
-        $param = urlencode('job_category[]').'='.urlencode($string);
-
-        $url = $this->client->setCategory($string)->getUrl();
-
-        $this->assertContains($param, $url);
-    }
-
-    public function testUrlIncludesMultipleCategoriesWhenProvided()
-    {
-        $params = [];
-        $array = [
-            0 => uniqid().' '.uniqid(),
-            1 => uniqid().' '.uniqid(),
-            2 => uniqid().' '.uniqid(),
+        $fields = [
+            'levels', // array
+            'locations', // array
+            'tags', // array
+            'categories', // array
+            'publication_date',
+            'short_name',
+            'refs', // array
+            'contents',
+            'type',
+            'model_type',
+            'company', // array
+            'id',
+            'name',
         ];
-        foreach ($array as $key => $category) {
-            $params[] = urlencode('job_category[]').'='.urlencode($array[$key]);
-        }
-
-        $url = $this->client->setCategory($array)->getUrl();
-
-        foreach ($params as $param) {
-            $this->assertContains($param, $url);
-        }
+        $this->assertEquals($fields, $this->client->getDefaultResponseFields());
     }
 
-    public function testUrlNotIncludesCategoryWhenNotProvided()
+    public function testItCanGetListingsPath()
     {
-        $param = urlencode('job_category[]').'=';
-
-        $url = $this->client->getUrl();
-
-        $this->assertNotContains($param, $url);
+        $this->assertEquals('results', $this->client->getListingsPath());
     }
 
-    public function testUrlIncludesCompanyWhenProvided()
-    {
-        $string = uniqid().' '.uniqid();
-        $param = urlencode('company[]').'='.urlencode($string);
-
-        $url = $this->client->setCompany($string)->getUrl();
-
-        $this->assertContains($param, $url);
-    }
-
-    public function testUrlNotIncludesCompanyWhenNotProvided()
-    {
-        $param = urlencode('company[]').'=';
-
-        $url = $this->client->getUrl();
-
-        $this->assertNotContains($param, $url);
-    }
-
-    public function testUrlIncludesLevelWhenProvided()
-    {
-        $string = uniqid().' '.uniqid();
-        $param = urlencode('job_level[]').'='.urlencode($string);
-
-        $url = $this->client->setLevel($string)->getUrl();
-
-        $this->assertContains($param, $url);
-    }
-
-    public function testUrlNotIncludesLevelWhenNotProvided()
-    {
-        $param = urlencode('job_level[]').'=';
-
-        $url = $this->client->getUrl();
-
-        $this->assertNotContains($param, $url);
-    }
-
-    public function testUrlIncludesLocationWhenProvided()
-    {
-        $location = uniqid().' '.uniqid();
-        $param = urlencode('job_location[]').'='.urlencode($location);
-
-        $url = $this->client->setLocation($location)->getUrl();
-
-        $this->assertContains($param, $url);
-    }
-
-    public function testUrlNotIncludesLocationWhenNotProvided()
-    {
-        $param = urlencode('job_location[]').'=';
-
-        $url = $this->client->getUrl();
-
-        $this->assertNotContains($param, $url);
-    }
-
-    public function testItCanCreateJobFromPayload()
+    public function testItCanCreateJobObjectFromPayload()
     {
         $payload = $this->createJobArray();
 
         $results = $this->client->createJobObject($payload);
 
-        $this->assertEquals($payload['title'], $results->title);
-        $this->assertEquals($payload['company_name'], $results->company);
-        $this->assertEquals('https://www.themuse.com'.$payload['apply_link'], $results->url);
-        $this->assertEquals($payload['id'], $results->sourceId);
+        $this->assertInstanceOf(Job::class, $results);
+        $this->assertEquals($payload['name'], $results->getTitle());
+        $this->assertEquals($payload['contents'], $results->getDescription());
+        $this->assertEquals($payload['refs']['landing_page'], $results->getUrl());
     }
 
-    public function testItCanCreateJobArrayFromPayloadWithMultipleLocations()
+    /**
+     * Integration test for the client's getJobs() method.
+     */
+    public function testItCanGetJobs()
     {
-        $locations_count = rand(2,20);
-        $payload = $this->createJobArrayWithMultipleLocations($locations_count);
+        $options = [
+            'category' => uniqid(),
+            'location' => uniqid(),
+            'api_key' => uniqid(),
+        ];
 
-        $results = $this->client->createJobArray($payload);
+        $guzzle = m::mock('GuzzleHttp\Client');
 
-        $this->assertCount($locations_count, $results);
-    }
+        $query = new MuseQuery($options);
 
-    public function testItCanConnect()
-    {
-        $provider = $this->getProviderAttributes();
+        $client = new MuseProvider($query);
 
-        for ($i = 0; $i < $provider['jobs_count']; $i++) {
-            $payload['results'][] = $this->createJobArray();
-        }
-
-        $responseBody = json_encode($payload);
-
-        $job = m::mock($this->jobClass);
-        $job->shouldReceive('setSource')->with($provider['source'])
-            ->times($provider['jobs_count'])->andReturnSelf();
+        $client->setClient($guzzle);
 
         $response = m::mock('GuzzleHttp\Message\Response');
-        $response->shouldReceive('getBody')->once()->andReturn($responseBody);
 
-        $http = m::mock('GuzzleHttp\Client');
-        $http->shouldReceive(strtolower($this->client->getVerb()))
-            ->with($this->client->getUrl(), $this->client->getHttpClientOptions())
+        $jobs = json_encode(['results' => [
+            $this->createJobArray(),
+            $this->createJobArray(),
+            $this->createJobArray(),
+        ]]);
+
+        $guzzle->shouldReceive('get')
+            ->with($query->getUrl(), [])
             ->once()
             ->andReturn($response);
-        $this->client->setClient($http);
+        $response->shouldReceive('getBody')
+            ->once()
+            ->andReturn($jobs);
 
-        $results = $this->client->getJobs();
+        $results = $client->getJobs();
 
-        $this->assertInstanceOf($this->collectionClass, $results);
-        $this->assertCount($provider['jobs_count'], $results);
+        $this->assertInstanceOf(Collection::class, $results);
+        $this->assertCount(3, $results);
+    }
+
+    /**
+     * Integration test with actual API call to the provider.
+     */
+    public function testItCanGetJobsFromApi()
+    {
+        if (!getenv('API_KEY')) {
+            $this->markTestSkipped('API_KEY not set. Real API call will not be made.');
+        }
+
+        $query = new MuseQuery([
+            'api_key' => getenv('API_KEY'),
+        ]);
+
+        $client = new MuseProvider($query);
+
+        $results = $client->getJobs();
+
+        $this->assertInstanceOf('JobApis\Jobs\Client\Collection', $results);
+
+        foreach($results as $job) {
+            $this->assertNotNull($job->name);
+        }
     }
 
     private function createJobArray() {
         return [
-            'id' => uniqid(),
-            'title' => uniqid(),
-            'company_name' => uniqid(),
-            'apply_link' => uniqid(),
-            'locations' => [uniqid()],
-            'creation_date' => '2015-08-'.rand(1,30),
+            'levels' =>
+                array (
+                    0 =>
+                        array (
+                            'short_name' => 'entry',
+                            'name' => 'Entry Level',
+                        ),
+                ),
+            'locations' =>
+                array (
+                    0 =>
+                        array (
+                            'name' => 'Sao Paolo, Brazil',
+                        ),
+                ),
+            'tags' =>
+                array (
+                    0 =>
+                        array (
+                            'short_name' => 'fortune-1000-companies',
+                            'name' => 'Fortune 1000',
+                        ),
+                ),
+            'categories' =>
+                [
+                    ["name" => "Sales & Business Development"],
+                ],
+            'publication_date' => '2016-12-18T16:06:13.351729Z',
+            'short_name' => 'litigation-counsel-lead-latam-f744ac',
+            'refs' =>
+                array (
+                    'landing_page' => 'https://www.themuse.com/jobs/facebook/litigation-counsel-lead-latam-f744ac',
+                ),
+            'contents' => '<p>Description with HTML...</p>',
+            'type' => 'external',
+            'model_type' => 'jobs',
+            'company' =>
+                array (
+                    'short_name' => 'facebook',
+                    'name' => 'Facebook',
+                    'id' => 659,
+                ),
+            'id' => 115888,
+            'name' => 'Litigation Counsel Lead, LATAM',
         ];
-    }
-
-    private function createJobArrayWithMultipleLocations($count) {
-        $cc = 0;
-
-        while ($cc < $count) {
-            $locations[] = uniqid();
-            $cc++;
-        }
-
-        return [
-            'id' => uniqid(),
-            'title' => uniqid(),
-            'company_name' => uniqid(),
-            'apply_link' => uniqid(),
-            'locations' => $locations,
-            'creation_date' => '2015-08-'.rand(1,30),
-        ];
-    }
-
-    private function getProviderAttributes($attributes = [])
-    {
-        $defaults = [
-            'path' => uniqid(),
-            'format' => 'json',
-            'source' => uniqid(),
-            'params' => [uniqid()],
-            'jobs_count' => rand(2,10),
-        ];
-        return array_replace($defaults, $attributes);
     }
 }
