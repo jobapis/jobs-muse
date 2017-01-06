@@ -1,6 +1,14 @@
 # Changelog
 All Notable changes to `jobs-muse` will be documented in this file
 
+## 1.0.0 - 2017-01-06
+
+### Added
+- Support for v.2.0 of jobs-common package
+
+### Removed
+- Old set_() methods in provider, moved to Query
+
 ## 0.2.0 - 2015-10-15
 
 ### Added
