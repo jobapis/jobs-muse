@@ -1,7 +1,7 @@
 {
-    "name": "jobbrander/jobs-muse",
+    "name": "jobapis/jobs-muse",
     "type": "library",
-    "description": "Making it simple to integrate your application with Muse Jobs API.",
+    "description": "Making it simple to integrate your application with the Muse's Jobs API.",
     "keywords": [
         "jobs",
         "api client",
@@ -9,7 +9,7 @@
         "muse",
         "themuse.com"
     ],
-    "homepage": "https://github.com/JobBrander/jobs-muse",
+    "homepage": "https://github.com/jobapis/jobs-muse",
     "license": "Apache-2.0",
     "authors": [
         {
@@ -20,21 +20,22 @@
     ],
     "require": {
         "php": ">=5.5.0",
-        "jobbrander/jobs-common": "~1.0.3"
+        "jobapis/jobs-common": "^2.0.2"
     },
     "require-dev": {
-        "phpunit/phpunit": "3.7.*",
+        "phpunit/phpunit": ">=4.6",
         "phpunit/php-code-coverage": "~2.0",
-        "mockery/mockery": ">=0.9.4"
+        "mockery/mockery": ">=0.9.4",
+        "squizlabs/php_codesniffer": "~2.0"
     },
     "autoload": {
         "psr-4": {
-            "JobBrander\\Jobs\\Client\\Providers\\": "src/"
+            "JobApis\\Jobs\\Client\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "JobBrander\\Jobs\\Client\\Providers\\Test\\": "tests/src/"
+            "JobApis\\Jobs\\Client\\Test\\": "tests/src/"
         }
     }
 }
